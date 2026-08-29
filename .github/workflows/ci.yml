@@ -138,7 +138,7 @@ jobs:
       - name: Deploy to Amazon ECS
         run: |
           aws ecs update-service \
-            --cluster "my-ecs-cluster" \
+            --cluster "my-app-cluster" \
             --service "my-ecs-service" \
             --force-new-deployment \
             --region ap-northeast-1      
