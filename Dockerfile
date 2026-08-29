@@ -30,6 +30,6 @@ COPY api ./api
 COPY .coveragerc .
 COPY data ./data
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]         # DB version (default)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
 
-#CMD ["uvicorn", "api.fastapi_app:app", "--host", "0.0.0.0", "--port", "80"] # for user would like to run EXcel (option)
+#CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
