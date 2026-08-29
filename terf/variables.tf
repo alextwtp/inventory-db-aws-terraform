@@ -1,0 +1,23 @@
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "ap-northeast-1"
+}
+
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
+  default     = "951322695421"
+}
+
+variable "db_password" {
+  description = "RDS password"
+  type        = string
+  sensitive   = true
+  default     = "Password123!"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t3.micro"
+}
