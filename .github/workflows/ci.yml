@@ -2,7 +2,7 @@ name: Deploy FastAPI to AWS ECR
 
 on:
   push:
-    # 當 push 到 main 分支時觸發
+    # Triggered when pushing to the main branch
     branches: [ main ] 
 env:
   AWS_REGION: ap-northeast-1
