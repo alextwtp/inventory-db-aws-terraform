@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-load_dotenv()
+load_dotenv(override=False)
 
 
 DB_USER = os.getenv("DB_USER")

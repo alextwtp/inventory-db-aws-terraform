@@ -7,7 +7,7 @@ resource "aws_lb" "main" {
   subnets = var.public_subnet_ids
   tags = {
     Name = "tf-ecs-alb"
-  }
+  }                 
 }
 
 # 2. 建立 Target Group (目標群組)
