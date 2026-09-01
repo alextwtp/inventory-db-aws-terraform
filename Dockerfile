@@ -7,7 +7,7 @@ FROM ubuntu:22.04
 
 WORKDIR /app
 
-# 新增這兩行：更新套件清單並安裝 python3 與 python3-pip
+# Update Package List And Install python3 & python3-pip
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \

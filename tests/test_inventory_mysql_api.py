@@ -95,17 +95,6 @@ def client():
 
     main.app.router.on_startup[:] = original_startup
 
-
-def test_root_status(client):
-    response = client.get("/")
-
-    assert response.status_code == 200
-    assert response.json() == {
-        "status": "ok",
-        "message": "Inventory MySQL API is running",
-    }
-
-
 def test_get_item_success(client, monkeypatch):
     fake_service = FakeService()
     monkeypatch.setattr(main, "get_service", lambda db: fake_service)

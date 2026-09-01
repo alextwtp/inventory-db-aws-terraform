@@ -14,7 +14,6 @@ variable "db_password" {
   description = "RDS password"
   type        = string
   sensitive   = true
-  default     = "Password123!"
 }
 
 variable "instance_type" {

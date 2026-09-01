@@ -1,13 +1,19 @@
-name: Deploy FastAPI to AWS ECR       
+name: Deploy FastAPI to AWS ECR
 
+
+# ----------------------------------------------------
+# Phase 1. General test and AI failure diagnosis
+# ----------------------------------------------------
 on:
   push:
-    # Triggered when pushing to the main branch
-    branches: [ main ] 
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 env:
   AWS_REGION: ap-northeast-1
-  ECR_REPOSITORY: my-app-repo     
-  
+  ECR_REPOSITORY: my-app-repo
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -29,9 +35,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        run: |          
+        run: |
           pytest --cov=. --cov-report=term-missing --cov-fail-under=80 | tee pytest.log
-          
+
       # 🤖 AI Failure diagnosis: Only triggered when the test fails!
       - name: AI Diagnosis on Failure
         if: failure()
@@ -40,11 +46,10 @@ jobs:
         run: |
           python -c "
           import os, requests
-          
-          
+
           api_key = os.environ.get('OPENAI_API_KEY')
           if not api_key:
-              print('Error:Lack of OPENAI_API_KEY, Cannot be repaired.')
+              print('Error: Lack of OPENAI_API_KEY, Cannot be repaired.')
               exit(0)
 
           try:
@@ -52,10 +57,10 @@ jobs:
                   log_content = f.read()
           except Exception as e:
               log_content = f'Cannot read log file: {e}'
-          
-          prompt = (f'Please analyze the following pytest test failure log in English. Provide a concise'
-                    f'root-cause diagnosis and step-by-step fix recommendations:\n\n{log_content}'
-                   ) 
+
+          prompt = (f'Please analyze the following pytest test failure log in English. Provide a concise '
+                    f'root-cause diagnosis and step-by-step fix recommendations:\n\n{log_content}')
+
           headers = {
               'Authorization': f'Bearer {api_key}',
               'Content-Type': 'application/json'
@@ -81,7 +86,7 @@ jobs:
           "
 
   # ----------------------------------------------------
-  # 2. 🤖 Pull Request AI Code Review
+  # Phase 2. 🤖 Pull Request AI Code Review
   # ----------------------------------------------------
   ai-code-review:
     name: AI Code Review
@@ -98,7 +103,40 @@ jobs:
         uses: coderabbitai/coderabbit-action@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ----------------------------------------------------
+  # Phase 3. Docker Hub Registry Push
+  # ----------------------------------------------------
+  docker-build-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push Docker image
+        run: |
+          # 1. Build 影像並打上 v2.0.0 版號
+          docker build -t alextwtpyeh/inventory-db-aws-terraform:v2.0.0 .
           
+          # 2. 為同一張影像加上 latest 標籤
+          docker tag alextwtpyeh/inventory-db-aws-terraform:v2.0.0 alextwtpyeh/inventory-db-aws-terraform:latest
+          
+          # 3. 兩張標籤一併推送到 Docker Hub
+          docker push alextwtpyeh/inventory-db-aws-terraform:v2.0.0
+          docker push alextwtpyeh/inventory-db-aws-terraform:latest       
+
+  # ----------------------------------------------------
+  # phase 4. Build and Push to AWS ECR & Deploy to ECS
+  # ----------------------------------------------------
   build-and-push-aws:
     name: Build and Push to Amazon ECR
     runs-on: ubuntu-latest
@@ -109,36 +147,31 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 【核心步驟 1】持剛拿到的兩把鑰匙，登入 AWS 警衛室
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-1 # 確認是東京區域
+          aws-region: ap-northeast-1
 
-      # 【核心步驟 2】讓這台 GitHub 伺服器登入 AWS 的 ECR 倉庫
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 【核心步驟 3】打包 Docker Image 並推送到 AWS ECR 倉庫
       - name: Build, tag, and push image to Amazon ECR
         env:
-          AWS_REGION: ap-northeast-1                                       
+          AWS_REGION: ap-northeast-1
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: my-app-repo                                   
+          ECR_REPOSITORY: my-app-repo
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .         
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-
-      # 👈 【新增核心步驟 4】強制通知 ECS 重新拉取新 Image 並部署
       - name: Deploy to Amazon ECS
         run: |
           aws ecs update-service \
             --cluster "my-app-cluster" \
             --service "my-ecs-service" \
             --force-new-deployment \
-            --region ap-northeast-1      
+            --region ap-northeast-1

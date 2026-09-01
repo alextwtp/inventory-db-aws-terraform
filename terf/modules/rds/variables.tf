@@ -17,7 +17,6 @@ variable "subnet_ids" {
 
 variable "db_password" {
   type        = string
-  default     = "YourPassword123!"
   sensitive   = true
   description = "RDS Password"
-}
+}  

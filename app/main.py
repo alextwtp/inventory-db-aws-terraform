@@ -1,10 +1,12 @@
+import os
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.db import Base, SessionLocal, engine
-from app.mysql_models import Inventory  # noqa: F401 - register model with Base.metadata
+from app.mysql_models import Inventory  
 from core.exceptions import AppError
 from core.inventory_mysql_service import InventoryMySQLService
 from core.item import Item
@@ -53,11 +55,12 @@ def item_response(item: Item, message: str) -> dict:
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+HTML_PATH = os.path.join(BASE_DIR, "index.html")
 
-@app.get("/")
-def read_root() -> dict:
-    return {"status": "ok", "message": "Inventory MySQL API is running"}
-
+@app.get("/", response_class=FileResponse)
+async def read_index():
+    return FileResponse(HTML_PATH)
 
 @app.get("/item/{pid}")
 def get_item(pid: str, db: Session = Depends(get_db)) -> dict:

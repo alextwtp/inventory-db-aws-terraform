@@ -16,7 +16,7 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
-# 附加上 AWS 官方預設的 ECS Task Execution Policy
+# 1. Setup AWS offical ECS Task Execution Policy
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
   role       = aws_iam_role.ecs_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -49,6 +49,12 @@ resource "aws_ecs_task_definition" "app_task" {
           hostPort      = 80
         }
       ]
+      environment = [
+        { name = "DB_HOST",     value = aws_db_instance.my_db.address },
+        { name = "DB_USER",     value = "admin" },
+        { name = "DB_PASSWORD", value = var.db_password },
+        { name = "DB_NAME",     value = "inventory_db" }
+      ]
     }
   ])
 }
@@ -57,7 +63,7 @@ resource "aws_ecs_task_definition" "app_task" {
 # 4. Build ECS Service 
 resource "aws_ecs_service" "main" {
   name            = "my-ecs-service"
-  cluster         = aws_ecs_cluster.main_cluster.id   # 👈 修正：對應 #2 的 main_cluster
+  cluster         = aws_ecs_cluster.main_cluster.id      # 👈 修正：對應 #2 的 main_cluster
   task_definition = aws_ecs_task_definition.app_task.arn # 👈 修正：對應 #3 的 app_task
   desired_count   = 1
   launch_type     = "FARGATE"

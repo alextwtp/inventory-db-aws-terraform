@@ -1,6 +1,8 @@
 .terraform/
 *.tfstate
 *.tfstate.backup
+*.tfvars
+*.html
 
 # Python
 __pycache__/

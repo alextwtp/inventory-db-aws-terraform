@@ -2,13 +2,13 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
-# 1. VPC 模組
+# 1. VPC Module
 module "vpc" {
   source     = "./modules/vpc"
   aws_region = "ap-northeast-1"
 }
 
-# 2. ALB 模組
+# 2. ALB Module
 module "alb" {
   source            = "./modules/alb"
   vpc_id            = module.vpc.vpc_id
@@ -21,7 +21,7 @@ module "alb" {
   ]
 }
 
-# 3. RDS 專屬 Security Group
+# 3. RDS Security Group
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
   description = "Allow inbound traffic for RDS"
@@ -46,7 +46,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# 5. RDS MySQL 8.0 實例
+# 5. RDS MySQL 8.0 Setting
 resource "aws_db_instance" "my_db" {
   identifier            = "my-inventory-db"
   allocated_storage     = 20
@@ -61,7 +61,7 @@ resource "aws_db_instance" "my_db" {
     
   vpc_security_group_ids = [aws_security_group.rds_sg.id]   
   db_subnet_group_name   = "main-rds-subnet-group-v2"
-  skip_final_snapshot   = true
+  skip_final_snapshot    = true
 
   tags = {
     Name = "my-production-db"
