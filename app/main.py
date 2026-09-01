@@ -2,6 +2,7 @@ import os
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from pathlib import Path
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -55,11 +56,11 @@ def item_response(item: Item, message: str) -> dict:
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-HTML_PATH = os.path.join(BASE_DIR, "index.html")
-
 @app.get("/", response_class=FileResponse)
 async def read_index():
+    HTML_PATH = Path.cwd() / "index.html" 
+    # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # HTML_PATH = os.path.join(BASE_DIR, "index.html")
     return FileResponse(HTML_PATH)
 
 @app.get("/item/{pid}")

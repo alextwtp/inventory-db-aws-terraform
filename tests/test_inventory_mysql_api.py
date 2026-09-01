@@ -1,4 +1,5 @@
 import pytest
+import os
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -95,6 +96,12 @@ def client():
 
     main.app.router.on_startup[:] = original_startup
 
+
+def test_root_status(client):  # 不需要 monkeypatch，也不需要手動建檔了
+    response = client.get("/")
+    assert response.status_code == 200
+
+
 def test_get_item_success(client, monkeypatch):
     fake_service = FakeService()
     monkeypatch.setattr(main, "get_service", lambda db: fake_service)
@@ -139,7 +146,6 @@ def test_inventory_in_success(client, monkeypatch):
     assert fake_service.calls == [
         ("inventory_in", "A001", "Mouse", 5, "", "Vendor A")
     ]
-
 
 def test_inventory_out_success(client, monkeypatch):
     fake_service = FakeService()
