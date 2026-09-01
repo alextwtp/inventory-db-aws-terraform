@@ -57,10 +57,9 @@ def startup() -> None:
     Base.metadata.create_all(bind=engine)
 
 @app.get("/", response_class=FileResponse)
-async def read_index():
-    HTML_PATH = Path.cwd() / "index.html" 
-    # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    # HTML_PATH = os.path.join(BASE_DIR, "index.html")
+async def read_index():  
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    HTML_PATH = os.path.join(BASE_DIR, "index.html")
     return FileResponse(HTML_PATH)
 
 @app.get("/item/{pid}")
