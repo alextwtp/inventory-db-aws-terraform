@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Copy project files into container
 COPY app ./app
-RUN cp /app/index.html /index.html
+#RUN cp /app/index.html /index.html
 COPY config ./config
 COPY core ./core
 COPY repository ./repository
