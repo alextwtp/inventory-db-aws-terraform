@@ -21,7 +21,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Copy project files into container
 COPY app ./app
-#RUN cp /app/index.html /index.html
 COPY config ./config
 COPY core ./core
 COPY repository ./repository
@@ -30,5 +29,6 @@ COPY pytest.ini .
 COPY api ./api
 COPY .coveragerc .
 COPY data ./data
+COPY index.html ./index.html
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
