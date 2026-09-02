@@ -55,7 +55,7 @@ def item_response(item: Item, message: str) -> dict:
 @app.on_event("startup")
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
-
+    
 @app.get("/", response_class=FileResponse)
 async def read_index():  
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))

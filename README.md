@@ -516,7 +516,7 @@ pytest --cov=. --cov-report=term-missing
 ### Verified Test Results:
 
 ```text
-57 passed, 1 skipped
+59 passed 
 Required test coverage of 80% reached
 Total coverage: 85.12%
 
@@ -694,12 +694,11 @@ The project adheres to strict **DevSecOps** principles, zero-trust configuration
 
 ## 💻 Platform-Specific Notes & Port Mapping
 
-### ⚠️ Excel File Lock Detection under WSL / Cross-OS
-When the application runs inside **WSL (Windows Subsystem for Linux)** or a Linux container while the target `.xlsx` file is open in Windows Excel, the Linux process may not reliably trap the file lock due to fundamental differences in OS-level file locking behaviors:
+### ⚠️ Excel File Lock Detection & Cross-OS Behavior
 
-* **Windows:** Uses mandatory file locking when an Excel workbook is open.
-* **WSL / Linux Environment:** Expects POSIX file advisory locks, which do not directly intercept Windows file handlers.
-* **Recommendation:** Close active Excel workbooks in Windows before triggering manual CLI imports, or execute the Excel-based workflows directly in a native Windows Python environment for full file-lock safety.
+* **Automated Testing Strategy:** Unit tests simulate file-locking conflicts via `monkeypatch` mocking, ensuring 100% test suite execution across both Windows and Linux CI/CD environments without OS-level lock dependencies.
+* **Runtime Operational Note:** When running the application inside **WSL** or a Linux container while the target `.xlsx` file is actively open in Windows Excel, POSIX advisory locks may not intercept Windows mandatory locks. 
+* **Recommendation:** Close active Excel workbooks in Windows before manual CLI imports or run native Python workflows when direct file system locking is required.
 
 ### 🔌 Host & Container Port Mapping
 

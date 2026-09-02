@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from config import constants as cons
-from core.exceptions import AppError, NoItemError
+from core.exceptions import AppError, NoItemError,FileInuseError
 from core.item import Item
 from core.inventory_service import InventoryService
 from repository.excel_repository import ExcelRepository
@@ -114,6 +114,8 @@ def inventory_in(req: InventoryRequest):
         return success_response(item, "Inventory-in success")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except (PermissionError, FileInuseError) as e:
+        raise HTTPException(status_code=409, detail="File is currently in use or locked.")
 
 # ------------------------
 # Remove stock

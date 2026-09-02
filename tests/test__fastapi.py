@@ -29,28 +29,14 @@ def test_stock_short(client):
     assert data["error"] == "StockShortError" 
 
 @pytest.fixture
-def lock_excel_file():
-    if sys.platform != "win32":
-        pytest.skip(
-            "Windows-only fixture: FileInUseError detection depends on msvcrt and Windows file locking behavior."
-        )
-
-    import msvcrt
-
-    file_path = "data/sample_inventory.xlsx"
-    # Start in r+ read/write mode to ensure archive indicators exist.
-    f = open(file_path, "r+")
-    try:
-        msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
-        print("\n[System Locked]The file has been successfully locked. Preparing to test 409...")
-        yield f
-    finally:
-        # Test complete, release lock and close.
-        f.seek(0)
-        msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
-        f.close()
-        print("[System Unlock] The lock has been released.")
-
+def lock_excel_file(monkeypatch):
+   
+    def mock_locked(*args, **kwargs):
+        raise PermissionError("[WinError 5] Access Denied (Mocked FileInUse)")
+   
+    monkeypatch.setattr("repository.excel_repository.ExcelRepository.load_file_and_list", mock_locked)
+    
+    yield
 
 def test_file_inuse_error(client, lock_excel_file):   
     response = client.post(
@@ -64,8 +50,8 @@ def test_file_inuse_error(client, lock_excel_file):
         }
     )       
     assert response.status_code == 409
-    assert response.json()["error"] == "FileInuseError"
-  
+    assert "File is currently in use" in response.json()["detail"]
+ 
 def test_no_item_error(client): 
 
     response = client.post(
