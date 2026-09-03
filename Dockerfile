@@ -29,5 +29,7 @@ COPY pytest.ini .
 COPY api ./api
 COPY .coveragerc .
 COPY data ./data
+COPY index.html ./app/index.html
+
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
