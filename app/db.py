@@ -1,10 +1,28 @@
 import os
-from dotenv import load_dotenv
+import json
+import boto3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from test_secret import get_db_secret
 
-# Get AWS Secrets Manager credentials
+# 1. 直接在內部定義讀取 Secret 的函式
+def get_db_secret():
+    secret_name = "prod/inventory/db-credentials"  # ⚠️ 請確認與你的 AWS Secret 名稱一致
+    region_name = "ap-northeast-1"                 # ⚠️ 務必指定地區（如東京）
+
+    client = boto3.client(                                 
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+        secret = get_secret_value_response['SecretString']
+        return json.loads(secret)
+    except Exception as e:
+        print(f"Error fetching secret from AWS: {e}")
+        raise e
+
+# 2. 取得 AWS Credentials
 db_config = get_db_secret()
 
 DB_USER = db_config["DB_USER"]
@@ -15,6 +33,6 @@ DB_NAME = db_config["DB_NAME"]
 
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-engine = create_engine(DATABASE_URL, echo=True) 
+engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
