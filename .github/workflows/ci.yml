@@ -175,6 +175,3 @@ jobs:
             --service "my-ecs-service" \
             --force-new-deployment \
             --region ap-northeast-1
-      - name: Force ECS redeployment
-        run: |
-         aws ecs update-service --cluster my-app-cluster --service my-ecs-service --force-new-deployment
