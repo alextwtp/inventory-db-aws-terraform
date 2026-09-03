@@ -7,8 +7,6 @@ from test_secret import get_db_secret
 # Get AWS Secrets Manager credentials
 db_config = get_db_secret()
 
-get_db_secret()
-
 DB_USER = db_config["DB_USER"]
 DB_PASSWORD = db_config["DB_PASSWORD"]
 DB_HOST = db_config["DB_HOST"]
