@@ -97,9 +97,10 @@ def client():
     main.app.router.on_startup[:] = original_startup
 
 
-def test_root_status(client):  # 不需要 monkeypatch，也不需要手動建檔了
+def test_root_status(client):  
     response = client.get("/")
     assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
 
 
 def test_get_item_success(client, monkeypatch):

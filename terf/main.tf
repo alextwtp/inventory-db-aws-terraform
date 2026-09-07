@@ -67,3 +67,31 @@ resource "aws_db_instance" "my_db" {
     Name = "my-production-db"
   }
 }
+
+# ==============================================================================
+# Security Infrastructure (ACM & KMS CMK with Automatic Rotation)
+#
+# Note: ACM Certificates and KMS CMKs were initially provisioned via AWS Console.
+# To avoid State Drift and resource conflicts in the current environment, 
+# this block is kept as reference code for future automated multi-account rebuilds.
+# ==============================================================================
+
+# 6. ESTABLISH ACM Certificate 
+# a. Build New CMK 
+# resource "aws_kms_key" "my_new_app_cmk" {
+#   description             = "CMK for My New Project Data Encryption" # Update the description for the new project
+#   deletion_window_in_days = 7                                        # 7 days is recommended for practice/test environments for easier cleanup
+#   enable_key_rotation     = true                                     # Ｅnable automatic key rotation for security best practices
+
+#   tags = {
+#     Environment = "Development"
+#     Project     = "NewProject"
+#     ManagedBy   = "Terraform"
+#   }
+# }
+
+# # b. Build New KMS Alias
+# resource "aws_kms_alias" "my_new_app_cmk_alias" {
+#   name          = "alias/my-new-app-key"                  # The alias for the new KMS key (keep the alias/ prefix)  
+#   target_key_id = aws_kms_key.my_new_app_cmk.key_id       # Automatically reference the key ID built above 　　　　
+# }

@@ -124,13 +124,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push Docker image
         run: |
-          # 1. Build 影像並打上 v2.0.0 版號
+          # 1. Build image with v2.0.0 Tag
           docker build -t alextwtpyeh/inventory-db-aws-terraform:v2.0.0 .
           
-          # 2. 為同一張影像加上 latest 標籤
+          # 2. Build image with latest Tag
           docker tag alextwtpyeh/inventory-db-aws-terraform:v2.0.0 alextwtpyeh/inventory-db-aws-terraform:latest
           
-          # 3. 兩張標籤一併推送到 Docker Hub
+          # 3. Push to Docker Hub together
           docker push alextwtpyeh/inventory-db-aws-terraform:v2.0.0
           docker push alextwtpyeh/inventory-db-aws-terraform:latest       
 

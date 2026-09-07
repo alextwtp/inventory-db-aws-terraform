@@ -1,7 +1,7 @@
 import os
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -23,6 +23,23 @@ class InventoryRequest(BaseModel):
     qty: int
     receiver: str = ""
     shipper: str = ""
+
+    @field_validator("pid")  
+    @classmethod
+    def validate_and_upper_pid(cls, v: str) -> str:
+        # 1. Remove leading and trailing whitespace     app1234
+        cleaned_v = v.strip()
+          
+        # 2. Check if it is an empty string
+        if not cleaned_v:
+            raise ValueError("PID cannot consist entirely of blank characters.")
+
+        # 3. Check if it contains only alphanumeric characters (to prevent special characters).  
+        if not cleaned_v.isalnum():
+            raise ValueError("PID can only contain English letters and numbers.")
+                                    
+        # 4. After passing all checks, convert to uppercase and send back.
+        return cleaned_v.upper()  
 
 
 def get_db():
@@ -57,10 +74,14 @@ def startup() -> None:
     Base.metadata.create_all(bind=engine)
     
 @app.get("/", response_class=FileResponse)
-async def read_index():  
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+async def read_index(): 
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     HTML_PATH = os.path.join(BASE_DIR, "index.html")
     return FileResponse(HTML_PATH)
+
+    # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # HTML_PATH = os.path.join(BASE_DIR, "index.html")
+    # return FileResponse(HTML_PATH)
 
 @app.get("/item/{pid}")
 def get_item(pid: str, db: Session = Depends(get_db)) -> dict:

@@ -4,17 +4,18 @@ import boto3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# 1. 直接在內部定義讀取 Secret 的函式
+# 1.Get the function to read Secret directly inside
 def get_db_secret():
-    secret_name = "prod/inventory/db-credentials"  # ⚠️ 請確認與你的 AWS Secret 名稱一致
-    region_name = "ap-northeast-1"                 # ⚠️ 務必指定地區（如東京）
+    secret_name = "prod/inventory/db-credentials"  # ⚠️ Please confirm the AWS Secret name matches
+    region_name = "ap-northeast-1"                 # ⚠️ Please specify the region (e.g., Tokyo)
 
-    client = boto3.client(                                 
+    client = boto3.client(                         # Use boto3 to create a Secrets Manager client                   
         service_name='secretsmanager',
         region_name=region_name
     )
-
+                                   
     try:
+        
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
         secret = get_secret_value_response['SecretString']
         return json.loads(secret)
@@ -22,7 +23,7 @@ def get_db_secret():
         print(f"Error fetching secret from AWS: {e}")
         raise e
 
-# 2. 取得 AWS Credentials
+# 2. Get AWS Credentials
 db_config = get_db_secret()
 
 DB_USER = db_config["DB_USER"]

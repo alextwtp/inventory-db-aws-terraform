@@ -63,8 +63,8 @@ resource "aws_ecs_task_definition" "app_task" {
 # 4. Build ECS Service 
 resource "aws_ecs_service" "main" {
   name            = "my-ecs-service"
-  cluster         = aws_ecs_cluster.main_cluster.id      # 👈 修正：對應 #2 的 main_cluster
-  task_definition = aws_ecs_task_definition.app_task.arn # 👈 修正：對應 #3 的 app_task
+  cluster         = aws_ecs_cluster.main_cluster.id      # 👈 main_cluster at #2
+  task_definition = aws_ecs_task_definition.app_task.arn # 👈 app_task at #3
   desired_count   = 1
   launch_type     = "FARGATE"
 

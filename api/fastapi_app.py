@@ -84,7 +84,7 @@ def success_response(data, message=None):
 # ------------------------
 @app.get("/")                               # Health check endpoint
 def read_root():
-    return {"hello": "world"}
+    return {"Hello": "Welcome to the Inventory API"}
 
 @api_router.get("/item/{pid}")
 def get_item_api(pid: str):
