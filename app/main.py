@@ -62,15 +62,12 @@ def item_response(item: Item, message: str) -> dict:
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
     
-@app.get("/", response_class=FileResponse)
-async def read_index(): 
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    HTML_PATH = os.path.join(BASE_DIR, "index.html")
-    return FileResponse(HTML_PATH)
+BASE_DIR = Path(__file__).resolve().parent.parent
+@app.get("/")
+async def read_index():
+    html_path = BASE_DIR / "index.html"
+    return FileResponse(html_path)
 
-    # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    # HTML_PATH = os.path.join(BASE_DIR, "index.html")
-    # return FileResponse(HTML_PATH)
 
 @app.get("/item/{pid}")
 def get_item(pid: str, db: Session = Depends(get_db)) -> dict:
