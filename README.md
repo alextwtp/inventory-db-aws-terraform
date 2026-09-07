@@ -403,7 +403,7 @@ curl -X POST http://127.0.0.1:8000/inventory/in \
   -H "Content-Type: application/json" \
   -d '{
     "pid": "A001",
-    "name": "Mouse",
+    "name": "MOUSE",
     "qty": 5,
     "receiver": "",
     "shipper": "Vendor A"
@@ -425,7 +425,7 @@ curl -X POST http://127.0.0.1:8000/inventory/out \
   -H "Content-Type: application/json" \
   -d '{
     "pid": "A001",
-    "name": "Mouse",
+    "name": "MOUSE",
     "qty": 2,
     "receiver": "Customer A",
     "shipper": ""
@@ -445,7 +445,7 @@ Example successful response (`200 OK`):
   "message": "Item found",
   "item": {
     "pid": "A001",
-    "name": "Mouse",
+    "name": "MOUSE",
     "current_qty": 10,
     "buyer": "",
     "shipper": ""

@@ -1,13 +1,14 @@
 import os
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel,field_validator
 from pathlib import Path
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.db import Base, SessionLocal, engine
 from app.mysql_models import Inventory  
+from api.utils import clean_and_upper_string
 from core.exceptions import AppError
 from core.inventory_mysql_service import InventoryMySQLService
 from core.item import Item
@@ -24,22 +25,10 @@ class InventoryRequest(BaseModel):
     receiver: str = ""
     shipper: str = ""
 
-    @field_validator("pid")  
+    @field_validator("pid", "name")
     @classmethod
-    def validate_and_upper_pid(cls, v: str) -> str:
-        # 1. Remove leading and trailing whitespace     app1234
-        cleaned_v = v.strip()
-          
-        # 2. Check if it is an empty string
-        if not cleaned_v:
-            raise ValueError("PID cannot consist entirely of blank characters.")
-
-        # 3. Check if it contains only alphanumeric characters (to prevent special characters).  
-        if not cleaned_v.isalnum():
-            raise ValueError("PID can only contain English letters and numbers.")
-                                    
-        # 4. After passing all checks, convert to uppercase and send back.
-        return cleaned_v.upper()  
+    def validate_fields(cls, v: str) -> str:
+        return clean_and_upper_string(v)
 
 
 def get_db():

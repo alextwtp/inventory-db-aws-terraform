@@ -126,7 +126,7 @@ def test_inventory_in_success(client, monkeypatch):
 
     payload = {
         "pid": "A001",
-        "name": "Mouse",
+        "name": "MOUSE",
         "qty": 5,
         "receiver": "",
         "shipper": "Vendor A",
@@ -140,12 +140,12 @@ def test_inventory_in_success(client, monkeypatch):
     assert body["status"] == "success"
     assert body["message"] == "Inventory-in success"
     assert body["item"]["pid"] == "A001"
-    assert body["item"]["name"] == "Mouse"
+    assert body["item"]["name"] == "MOUSE"
     assert body["item"]["current_qty"] == 15
     assert body["item"]["shipper"] == "Vendor A"
 
     assert fake_service.calls == [
-        ("inventory_in", "A001", "Mouse", 5, "", "Vendor A")
+        ("inventory_in", "A001", "MOUSE", 5, "", "Vendor A")
     ]
 
 def test_inventory_out_success(client, monkeypatch):
@@ -154,7 +154,7 @@ def test_inventory_out_success(client, monkeypatch):
 
     payload = {
         "pid": "A001",
-        "name": "Mouse",
+        "name": "MOUSE",
         "qty": 5,
         "receiver": "Customer A",
         "shipper": "",
@@ -168,12 +168,12 @@ def test_inventory_out_success(client, monkeypatch):
     assert body["status"] == "success"
     assert body["message"] == "Inventory-out success"
     assert body["item"]["pid"] == "A001"
-    assert body["item"]["name"] == "Mouse"
+    assert body["item"]["name"] == "MOUSE"
     assert body["item"]["current_qty"] == 5
     assert body["item"]["buyer"] == "Customer A"
 
     assert fake_service.calls == [
-        ("inventory_out", "A001", "Mouse", 5, "Customer A", "")
+        ("inventory_out", "A001", "MOUSE", 5, "Customer A", "")
     ]
 
 
@@ -193,7 +193,7 @@ def test_sqlalchemy_error_rolls_back_and_returns_500(
 
     payload = {
         "pid": "A001",
-        "name": "Mouse",
+        "name": "MOUSE",
         "qty": 5,
         "receiver": "",
         "shipper": "Vendor A",
