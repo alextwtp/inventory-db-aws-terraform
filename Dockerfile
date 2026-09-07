@@ -23,13 +23,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY app ./app
 COPY config ./config
 COPY core ./core
-COPY repository ./repository
-COPY tests ./tests
-COPY pytest.ini .
-COPY api ./api
-COPY .coveragerc .
-COPY data ./data
-COPY index.html ./app/index.html
-
+COPY . .
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
