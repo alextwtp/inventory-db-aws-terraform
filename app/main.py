@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from app.db import Base, SessionLocal, engine
 from app.mysql_models import Inventory  
-from api.utils import clean_and_upper_string
 from core.exceptions import AppError
 from core.inventory_mysql_service import InventoryMySQLService
 from core.item import Item
@@ -24,12 +23,6 @@ class InventoryRequest(BaseModel):
     qty: int
     receiver: str = ""
     shipper: str = ""
-
-    @field_validator("pid", "name")
-    @classmethod
-    def validate_fields(cls, v: str) -> str:
-        return clean_and_upper_string(v)
-
 
 def get_db():
     db = SessionLocal()

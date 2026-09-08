@@ -4,7 +4,6 @@ from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
-from api.utils import clean_and_upper_string
 from config import constants as cons
 from core.exceptions import AppError, NoItemError,FileInuseError
 from core.item import Item
@@ -25,13 +24,24 @@ class InventoryRequest(BaseModel):
     name: Optional[str] = None
     qty: int = Field(ge=1, description="Quantity must be greater than or equal to 1")
     receiver: Optional[str] = None
-    shipper: Optional[str] = None   
+    shipper: Optional[str] = None    
 
-
-    @field_validator("pid", "name")
+    @field_validator("pid")  
     @classmethod
-    def validate_fields(cls, v: str) -> str:
-        return clean_and_upper_string(v)
+    def validate_and_upper_pid(cls, v: str) -> str:
+        # 1. Remove leading and trailing whitespace     app1234
+        cleaned_v = v.strip()
+          
+        # 2. Check if it is an empty string
+        if not cleaned_v:
+            raise ValueError("PID cannot consist entirely of blank characters.")
+
+        # 3. Check if it contains only alphanumeric characters (to prevent special characters).  
+        if not cleaned_v.isalnum():
+            raise ValueError("PID can only contain English letters and numbers.")
+                                    
+        # 4. After passing all checks, convert to uppercase and send back.
+        return cleaned_v.upper()       
 
 
 @app.exception_handler(AppError)             # Handle custom application errors
@@ -74,7 +84,7 @@ def success_response(data, message=None):
 # ------------------------
 @app.get("/")                               # Health check endpoint
 def read_root():
-    return {"Hello": "Welcome to the Inventory API"}
+    return {"hello": "world"}
 
 @api_router.get("/item/{pid}")
 def get_item_api(pid: str):
