@@ -1,4 +1,4 @@
-# 1. 建立 Application Load Balancer
+# 1. Establish Application Load Balancer
 resource "aws_lb" "main" {
   name               = "tf-ecs-alb"
   internal           = false
@@ -10,13 +10,13 @@ resource "aws_lb" "main" {
   }                 
 }
 
-# 2. 建立 Target Group (目標群組)
+# 2. Establish Target Group (Target Group)
 resource "aws_lb_target_group" "ecs_tg" {
-  name = "tf-ecs-target-group-v2"
+  name = "tf-ecs-target-group-v1"
   port        = 80
   protocol    = "HTTP"
   vpc_id = var.vpc_id  
-  target_type = "ip" # Fargate 模式必須使用 ip 類型
+  target_type = "ip" # Must use ip type for Fargate mode
   lifecycle {
     create_before_destroy = true
   }
@@ -30,7 +30,7 @@ resource "aws_lb_target_group" "ecs_tg" {
   }
 }
 
-# 3. HTTP Listener (Port 80) -> 自動 301 重導向至 HTTPS
+# 3. HTTP Listener (Port 80) -> Automatically redirect to HTTPS
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
@@ -42,14 +42,14 @@ resource "aws_lb_listener" "http" {
   }  
 }
 
-# 4. HTTPS Listener (Port 443) -> 掛載 ACM 憑證並轉發給 Target Group
+# 4. HTTPS Listener (Port 443) -> Attach ACM certificate and forward to Target Group
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.main.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   
-  # 確保是用剛剛傳進來的變數
+  # Ensure it's using the variable passed in
   certificate_arn   = var.certificate_arn
 
   default_action {

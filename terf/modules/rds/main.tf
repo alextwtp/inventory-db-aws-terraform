@@ -1,4 +1,4 @@
-# 1. RDS 專用的 Security Group
+# 1. RDS Security Group
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
   description = "Allow inbound traffic from ECS tasks only"
@@ -25,7 +25,7 @@ resource "aws_security_group" "rds_sg" {
 
 # 2. RDS Subnet Group
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "main-rds-subnet-group-v2"
+  name       = "main-rds-subnet-group-v1"
   subnet_ids = var.subnet_ids
 
   tags = {
@@ -33,7 +33,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   }
 }
 
-# 3. 建立 RDS MySQL 資料庫實例
+# 3. Establish RDS MySQL Database Instance
 resource "aws_db_instance" "my_db" {
   identifier             = "my-inventory-db"
   allocated_storage      = 20
