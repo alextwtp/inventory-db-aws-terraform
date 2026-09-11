@@ -12,7 +12,7 @@ resource "aws_lb" "main" {
 
 # 2. Establish Target Group (Target Group)
 resource "aws_lb_target_group" "ecs_tg" {
-  name = "tf-ecs-target-group-v1"
+  name = "tf-ecs-target-group-v2"
   port        = 80
   protocol    = "HTTP"
   vpc_id = var.vpc_id  

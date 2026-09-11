@@ -25,7 +25,7 @@ resource "aws_security_group" "rds_sg" {
 
 # 2. RDS Subnet Group
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "main-rds-subnet-group-v1"
+  name       = "main-rds-subnet-group-v2"
   subnet_ids = var.subnet_ids
 
   tags = {
