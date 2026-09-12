@@ -1,6 +1,6 @@
 # Inventory Management System (AWS & Terraform)
 
-![CI](https://github.com/alextwtp/inventory-db-aws-terraform/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/alextwtp/inventory-bd-acm-kms/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat&logo=fastapi&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
@@ -12,7 +12,7 @@ An end-to-end, lightweight inventory management platform designed for daily stoc
 
 ### 💡 Project Evolution
 * **v1.0 (Desktop MVP):** Originally built as an internal tool for a small business, utilizing a **Tkinter GUI** with **Excel-based storage** for quick operational deployment.
-* **v2.0 (Production Backend):** Refactored into a scalable, maintainable enterprise solution powered by **FastAPI**, **MySQL**, **SQLAlchemy ORM**, **Docker Compose**, automated testing, **GitHub Actions CI**, and **Docker Hub** integration.
+* **v3.0 (Production Backend):** Refactored into a scalable, maintainable enterprise solution powered by **FastAPI**, **MySQL**, **SQLAlchemy ORM**, **Docker Compose**, automated testing, **GitHub Actions CI**, and **Docker Hub** integration.
 
 ---
 
@@ -38,6 +38,12 @@ An end-to-end, lightweight inventory management platform designed for daily stoc
 * **Automated Pipeline:** GitHub Actions for continuous integration, automated testing, and Docker Hub registry publishing.
 * **AI CI Diagnosis:** Integrated OpenAI API (`gpt-4o-mini`) to automatically diagnose CI pipeline test failures.
 * **AI Code Review:** Automated PR code reviews and quality checks powered by CodeRabbit AI.
+
+### ☁️ AWS Cloud & Infrastructure Automation (Terraform IaC)
+* **S3 + DynamoDB Remote Backend:** Secure state management with automated DynamoDB state-locking for IaC collaboration.
+* **AWS ECS Fargate & ECR Containerization:** Fully automated CI/CD pipeline building Docker images to ECR and deploying to serverless AWS ECS Fargate.
+* **AWS Secrets Manager & KMS:** Dynamic runtime injection of RDS database credentials and API secrets with KMS key management.
+* **Domain, Route 53 & SSL (ACM):** Provisioned custom domain routing via Route 53 with automated SSL/TLS certificate issuing through AWS ACM.
 
 ---
 
@@ -102,7 +108,7 @@ AWS RDS MySQL Database
 Key project files and directories:
 
 ```text
-inventory-db-aws-terraform/
+inventory-bd-acm-kms/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml             # GitHub Actions CI pipeline configuration
@@ -155,7 +161,7 @@ Generated cache files, local environment files, database data, test artifacts, a
 
 ### Container Environment
 * **Docker Engine:** `20.10+`
-* **Docker Compose:** `v2.0+`
+* **Docker Compose:** `v3.0+`
 
 ---
 
@@ -164,8 +170,8 @@ Generated cache files, local environment files, database data, test artifacts, a
 ### 1. Clone Repository & Setup Virtual Environment
 
 ```bash
-git clone https://github.com/alextwtp/inventory-db-aws-terraform.git
-cd inventory-db-aws-terraform
+git clone https://github.com/alextwtp/inventory-bd-acm-kms.git
+cd inventory-bd-acm-kms
 
 # Create and activate virtual environment
 python3 -m venv venv
@@ -193,7 +199,7 @@ cp .env.example .env
 
 ```
 
-Example host configuration (if access via alextwtp.com):
+Example host configuration (if access via alextwtp.online):
 
 ```env
 DB_HOST=<your database url>
@@ -601,29 +607,29 @@ Run pytest & Coverage Gate (80%)
 The application image is packaged and published to Docker Hub for public verification, artifact storage, and standardized containerized deployments.
 
 ### Public Image Artifacts
-* **Repository:** `alextwtpyeh/inventory-db-aws-terraform`
-* **Versioned Tag:** `alextwtpyeh/inventory-db-aws-terraform:v2.0.0`
-* **Latest Tag:** `alextwtpyeh/inventory-db-aws-terraform:latest`
+* **Repository:** `alextwtpyeh/inventory-bd-acm-kms`
+* **Versioned Tag:** `alextwtpyeh/inventory-bd-acm-kms:v3.0.0`
+* **Latest Tag:** `alextwtpyeh/inventory-bd-acm-kms:latest`
 
 ### Pull and Verify Container Image
 
 Pull the versioned production artifact:
 
 ```bash
-docker pull alextwtpyeh/inventory-db-aws-terraform:v2.0.0
+docker pull alextwtpyeh/inventory-bd-acm-kms:v3.0.0
 
 ```
 Verify container environment & Python runtime:
 
 ```bash
-docker run --rm alextwtpyeh/inventory-db-aws-terraform:v2.0.0 python --version
+docker run --rm alextwtpyeh/inventory-bd-acm-kms:v3.0.0 python --version
 
 ```
 
 Execute containerized automated tests inside isolated image:
 
 ```bash
-docker run --rm alextwtpyeh/inventory-db-aws-terraform:v2.0.0 pytest -q
+docker run --rm alextwtpyeh/inventory-bd-acm-kms:v3.0.0 pytest -q
 
 ```
 
@@ -773,13 +779,6 @@ For high-traffic enterprise deployments, evaluate trade-offs across:
 * MySQL Read Replicas for read-heavy workloads
 * Connection pooling (via SQLAlchemy / PgBouncer)
 * Stateless FastAPI application layer scaling
-
-### ☁️ AWS & IaC Infrastructure Roadmap (Terraform)
-Future infrastructure extensions planned for the `trf/` Terraform architecture:
-* **S3 + DynamoDB Remote State Backend:** Transition from local `.tfstate` to encrypted S3 bucket storage with DynamoDB state-locking to enable secure team-wide IaC collaboration.
-* **AWS ECS Fargate Container Orchestration:** Migrate from local Docker hosts to serverless container execution via AWS ECS/Fargate for automatic scaling.
-* **AWS Secrets Manager Integration:** Dynamic runtime injection of RDS database passwords and OpenAI API keys bypassing hardcoded Terraform variables.
-* **Multi-AZ RDS High Availability:** Provision Multi-AZ failover instances with automated daily snapshot backups for enterprise-grade uptime guarantees.
 
 ---
 
