@@ -58,8 +58,9 @@ resource "aws_db_instance" "my_db" {
   db_name               = "inventory_db"
   username              = "admin"
   password              = var.db_password
-    
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]   
+  publicly_accessible  = true 
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]     
   db_subnet_group_name   = "main-rds-subnet-group-v2"
   skip_final_snapshot    = true
 
