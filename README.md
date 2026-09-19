@@ -1,6 +1,6 @@
 # Inventory Management System (AWS & Terraform)
 
-![CI](https://github.com/alextwtp/inventory-bd-acm-kms/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/alextwtp/inventory-db-aws-terraform/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat&logo=fastapi&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
