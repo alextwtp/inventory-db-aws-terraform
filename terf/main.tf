@@ -69,12 +69,12 @@ resource "aws_db_instance" "my_db" {
   }
 }
 
-# ================================================================================
+# =================================================================================
 # Security Infrastructure (ACM & KMS CMK with Automatic Rotation. Tested passed)
 # Note: ACM Certificates and KMS CMKs were initially provisioned via AWS Console.
 # To avoid State Drift and resource conflicts in the current environment, 
 # this block is kept as reference code for future automated multi-account rebuilds.
-# =================================================================================
+# ==================================================================================
 
 # 6. ESTABLISH ACM Certificate 
 # a. Build New CMK 
