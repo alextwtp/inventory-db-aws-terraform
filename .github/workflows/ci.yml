@@ -124,14 +124,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push Docker image
         run: |
-          # 1. Build image with v2.0.0 Tag
-          docker build -t alextwtpyeh/inventory-db-aws-terraform:v2.0.0 .
+          # 1. Build image with v3.0.0 Tag
+          docker build -t alextwtpyeh/inventory-db-aws-terraform:v3.0.0 .
           
           # 2. Build image with latest Tag
-          docker tag alextwtpyeh/inventory-db-aws-terraform:v2.0.0 alextwtpyeh/inventory-db-aws-terraform:latest
+          docker tag alextwtpyeh/inventory-db-aws-terraform:v3.0.0 alextwtpyeh/inventory-db-aws-terraform:latest
           
           # 3. Push to Docker Hub together
-          docker push alextwtpyeh/inventory-db-aws-terraform:v2.0.0
+          docker push alextwtpyeh/inventory-db-aws-terraform:v3.0.0
           docker push alextwtpyeh/inventory-db-aws-terraform:latest       
 
   # ----------------------------------------------------
