@@ -109,7 +109,7 @@ AWS RDS MySQL Database
 Key project files and directories:
 
 ```text
-inventory-bd-acm-kms/
+inventory-db-aws-terraform/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml             # GitHub Actions CI pipeline configuration
@@ -171,8 +171,8 @@ Generated cache files, local environment files, database data, test artifacts, a
 ### 1. Clone Repository & Setup Virtual Environment
 
 ```bash
-git clone https://github.com/alextwtp/inventory-bd-acm-kms.git
-cd inventory-bd-acm-kms
+git clone https://github.com/alextwtp/inventory-db-aws-terraform.git
+cd inventory-db-aws-terraform
 
 # Create and activate virtual environment
 python3 -m venv venv
@@ -608,29 +608,29 @@ Run pytest & Coverage Gate (80%)
 The application image is packaged and published to Docker Hub for public verification, artifact storage, and standardized containerized deployments.
 
 ### Public Image Artifacts
-* **Repository:** `alextwtpyeh/inventory-bd-acm-kms`
-* **Versioned Tag:** `alextwtpyeh/inventory-bd-acm-kms:v3.0.0`
-* **Latest Tag:** `alextwtpyeh/inventory-bd-acm-kms:latest`
+* **Repository:** `alextwtpyeh/inventory-db-aws-terraform`
+* **Versioned Tag:** `alextwtpyeh/inventory-db-aws-terraform:v3.0.0`
+* **Latest Tag:** `alextwtpyeh/inventory-db-aws-terraform:latest`
 
 ### Pull and Verify Container Image
 
 Pull the versioned production artifact:
 
 ```bash
-docker pull alextwtpyeh/inventory-bd-acm-kms:v3.0.0
+docker pull alextwtpyeh/inventory-db-aws-terraform:v3.0.0
 
 ```
 Verify container environment & Python runtime:
 
 ```bash
-docker run --rm alextwtpyeh/inventory-bd-acm-kms:v3.0.0 python --version
+docker run --rm alextwtpyeh/inventory-db-aws-terraform:v3.0.0 python --version
 
 ```
 
 Execute containerized automated tests inside isolated image:
 
 ```bash
-docker run --rm alextwtpyeh/inventory-bd-acm-kms:v3.0.0 pytest -q
+docker run --rm alextwtpyeh/inventory-db-aws-terraform:v3.0.0 pytest -q
 
 ```
 
