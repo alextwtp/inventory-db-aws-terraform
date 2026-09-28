@@ -1,5 +1,5 @@
 # ==========================================
-# 1. ECS Task Role (get Secrets Manager)
+# 1. ECS Task Role (for FastApi/boto3)
 # ==========================================
 resource "aws_iam_role" "ecs_task_role" {
   name = "my-ecs-task-role"
@@ -8,8 +8,8 @@ resource "aws_iam_role" "ecs_task_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
@@ -18,12 +18,9 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_secrets_policy" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
-}
-
-# 2. Build ECS Task Execution IAM Role
+# ==========================================
+# 2. ECS Task Execution IAM Role (for AWS ECS Agent)
+# ==========================================
 resource "aws_iam_role" "ecs_execution_role" {
   name = "ecs-execution-role-v2"
   
@@ -31,8 +28,8 @@ resource "aws_iam_role" "ecs_execution_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
@@ -41,20 +38,44 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
-# 3. Setup AWS offical ECS Task Execution Policy
+# 2a. Load AWS official ECS Task Execution policy)
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
   role       = aws_iam_role.ecs_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# 2b. Least privilege policy: Only allow ECS Execution Role to read the "exclusive" DB secret ARN to inject into environment variables
+resource "aws_iam_policy" "ecs_execution_secrets_policy" {
+  name        = "ecs-execution-secrets-db-only"
+  description = "Allow ECS Execution Role to pull specific DB secret from Secrets Manager"
 
-# 2. Build ECS Cluster
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = [aws_secretsmanager_secret.db_secret.arn] # 👈 Precisely target exclusive Secret ARN
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_secrets_to_execution" {
+  role       = aws_iam_role.ecs_execution_role.name
+  policy_arn = aws_iam_policy.ecs_execution_secrets_policy.arn
+}
+
+# ==========================================
+# 3. ECS Cluster
+# ==========================================
 resource "aws_ecs_cluster" "main_cluster" {
   name = "my-app-cluster"
 }
 
-
-# 4. Define ECS Task Definition
+# ==========================================
+# 4. ECS Task Definition
+# ==========================================
 resource "aws_ecs_task_definition" "app_task" {
   family                   = "my-app-task"
   network_mode             = "awsvpc"
@@ -81,11 +102,19 @@ resource "aws_ecs_task_definition" "app_task" {
         }
       ]
 
+      # Insensitive control items are retained in the environment section.
       environment = [
-        { name = "DB_HOST", value = aws_db_instance.my_db.address},
+        { name = "DB_HOST", value = aws_db_instance.my_db.address },
         { name = "DB_NAME", value = "inventory_db" },
-        { name = "DB_USER", value = "admin" },
-        { name = "DB_PASSWORD", value = var.db_password }
+        { name = "DB_USER", value = "admin" }
+      ]
+      # Security Best Practices: Sensitive passwords should not be written in plaintext; 
+      # they should be dynamically injected via Secrets Manager through secrets.      
+      secrets = [
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:DB_PASSWORD::"
+        }
       ]
 
       logConfiguration = {
@@ -100,23 +129,27 @@ resource "aws_ecs_task_definition" "app_task" {
   ])
 }
 
-# 5. Ensure CloudWatch Log Group is Created to Avoid Permission or Resource Issues
+# ==========================================
+# 5. CloudWatch Log Group
+# ==========================================
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name              = "/ecs/my-app"
   retention_in_days = 7
 }
 
-# 6. Build ECS Service 
+# ==========================================
+# 6. ECS Service
+# ==========================================
 resource "aws_ecs_service" "main" {
   name            = "my-ecs-service"
-  cluster         = aws_ecs_cluster.main_cluster.id      # 👈 main_cluster at #2
-  task_definition = aws_ecs_task_definition.app_task.arn # 👈 app_task at #3
+  cluster         = aws_ecs_cluster.main_cluster.id
+  task_definition = aws_ecs_task_definition.app_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets = module.vpc.public_subnet_ids
-    security_groups = [module.alb.ecs_sg_id]
+    subnets          = module.vpc.public_subnet_ids
+    security_groups  = [module.alb.ecs_sg_id]
     assign_public_ip = true
   }
 
@@ -129,13 +162,17 @@ resource "aws_ecs_service" "main" {
   depends_on = [module.alb.alb_listener_http]
 }
 
-# 7. Establish Secrets Manager's Secret Container
+# ==========================================
+# 7. Secrets Manager Secret Container
+# ==========================================
 resource "aws_secretsmanager_secret" "db_secret" {
   name                    = "prod/inventory/db-credentials-v2"  
-  recovery_window_in_days = 0                        # Set to 0 for test environment to allow immediate deletion
-} 
+  recovery_window_in_days = 0 # The test environment is set to 0 to facilitate immediate deletion.
+}
 
-# 8. Write RDS Password and Connection Information to Secret
+# =====================================================================
+# 8. Secret Version (Write database password and connection information)
+# ======================================================================
 resource "aws_secretsmanager_secret_version" "db_secret_val" {
   secret_id     = aws_secretsmanager_secret.db_secret.id
   secret_string = jsonencode({
