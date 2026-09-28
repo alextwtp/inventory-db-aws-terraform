@@ -86,7 +86,7 @@ jobs:
           "
 
   # ----------------------------------------------------
-  # Phase 2. 🤖 Pull Request AI Code Review
+  # Phase 2. Pull Request AI Code Review
   # ----------------------------------------------------
   ai-code-review:
     name: AI Code Review
