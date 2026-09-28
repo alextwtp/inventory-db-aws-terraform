@@ -156,7 +156,7 @@ Generated cache files, local environment files, database data, test artifacts, a
 ## ⚙️ Requirements & Prerequisites
 
 ### Local Development Environment
-* **Python:** `3.10+`
+* **Python:** `3.11+`
 * **Package Manager:** `pip`
 * **Database (Optional for API path):** `MySQL 8.0+`
 
