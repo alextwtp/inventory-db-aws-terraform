@@ -14,6 +14,7 @@ An end-to-end, lightweight inventory management platform designed for daily stoc
 * **v1.0 (Desktop MVP):** Originally built as an internal tool for a small business, utilizing a **Tkinter GUI** with **Excel-based storage** for quick operational deployment.
 * **v2.0 (Production Backend):** Refactored into a scalable enterprise solution powered by **FastAPI**, **MySQL**, **SQLAlchemy ORM**, **Docker Compose**, automated testing, **GitHub Actions CI**, and **Docker Hub** integration.
 * **v3.0 (Cloud-Native Infrastructure):** Extended with **AWS Cloud Infrastructure** (ECS Fargate, RDS, ALB, ACM, KMS) automated via **Terraform (IaC)** for production-grade cloud deployment.
+* **v4.0 (Next-Gen Container Orchestration - In Progress):** Architecting the migration from AWS ECS Fargate to **AWS EKS (Elastic Kubernetes Service)**. Implementing Helm charts, Kubernetes Manifests via Terraform, and Horizontal Pod Autoscaling (HPA) to support enterprise-grade high-concurrency workloads.
 
 ---
 
@@ -780,6 +781,12 @@ For high-traffic enterprise deployments, evaluate trade-offs across:
 * MySQL Read Replicas for read-heavy workloads
 * Connection pooling (via SQLAlchemy / PgBouncer)
 * Stateless FastAPI application layer scaling
+
+### 🌐 v4.0 Kubernetes (EKS) Migration Roadmap
+* **Infrastructure Provisioning**: Utilizing Terraform to provision a production-ready AWS EKS Cluster, managed node groups, and IAM Roles for Service Accounts (IRSA).
+* **GitOps & Deployment**: Structuring K8s manifests and packaging the FastAPI application using **Helm Charts** for environment-based configuration (Dev/Staging/Prod).
+* **Traffic Management**: Transitioning from AWS ALB to an Ingress Controller (e.g., NGINX Ingress or AWS Load Balancer Controller) for advanced routing.
+* **Scalability & Resiliency**: Implementing Horizontal Pod Autoscaler (HPA) metrics tracking (CPU/Memory utilization) and configuring precise liveness/readiness probes.
 
 ---
 

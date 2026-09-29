@@ -1,6 +1,7 @@
 # 1. Establish ECR Repository
 resource "aws_ecr_repository" "app_repo" {
   name                 = "my-app-repo" 
+  force_delete         = true
   image_tag_mutability = "MUTABLE"
 
   # Open image vulnerability scanning (security best practice)
