@@ -7,7 +7,6 @@ import app.main as main
 from core.exceptions import AppError
 from core.item import Item
 
-
 class DummyDb:
     def __init__(self):
         self.rollback_called = False

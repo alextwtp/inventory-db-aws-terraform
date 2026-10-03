@@ -1,9 +1,10 @@
-terraform {
-  backend "s3" {
-    bucket         = "alextwtp-tfstate-20260825" 
-    key            = "inventory-db/terraform.tfstate"  
-    region         = "ap-northeast-1"
-    dynamodb_table = "terraform-locks"          
-    encrypt        = true                       
-    }
-}
+#####################################################################################
+# To use Remote S3 State, uncomment the section below and enter your S3 Bucket name.# 
+#####################################################################################
+
+# terraform {
+# backend "s3" {
+#  bucket = "your-tf-state-bucket"
+#  key    = "your state.tfstate"
+#  region = "your region"
+#  } 
