@@ -6,10 +6,10 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 # 1.Get the function to read Secret directly inside
 def get_db_secret():
-    secret_name = "prod/inventory/db-credentials"  # ⚠️ Please confirm the AWS Secret name matches
-    region_name = "ap-northeast-1"                 # ⚠️ Please specify the region (e.g., Tokyo)
+    secret_name = "prod/inventory/db-credentials-v2"  # ⚠️ Please confirm the AWS Secret name matches
+    region_name = "ap-northeast-1"                    # ⚠️ Please specify the region (e.g., Tokyo)
 
-    client = boto3.client(                         # Use boto3 to create a Secrets Manager client                   
+    client = boto3.client(                            # Use boto3 to create a Secrets Manager client                   
         service_name='secretsmanager',
         region_name=region_name
     )
