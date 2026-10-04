@@ -55,6 +55,11 @@ resource "aws_db_instance" "my_db" {
   engine_version        = "8.0"  
   instance_class        = "db.t4g.micro"
   
+  # Following settings (three lines) are for test/practice environment only.
+  backup_retention_period = 0  # Disable automatic backups for the test environment to avoid unnecessary storage costs.
+  skip_final_snapshot = true   # Skip the final snapshot to facilitate easier cleanup in the test environment.      
+  deletion_protection = false  # Disable deletion protection to allow for easier resource cleanup in the test environment.
+  
   db_name               = "inventory_db"
   username              = "admin"
   password              = var.db_password
@@ -62,8 +67,7 @@ resource "aws_db_instance" "my_db" {
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]     
   db_subnet_group_name   = "main-rds-subnet-group-v2"
-  skip_final_snapshot    = true
-
+  
   tags = {
     Name = "my-production-db"
   }
